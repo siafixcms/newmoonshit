@@ -87,17 +87,20 @@ class MoonHelper
         $timestamp = $date->timestamp;
         $time = $date->format('H:i:s');
 
+        // Current day and previous day moon data
         $moondata2 = self::phase($north, $east, $zonedop, strtotime($date->format('Y-m-d') . ' ' . $time . ' ' . $tzone));
         $moondata3 = self::phase($north, $east, $zonedop, strtotime($date->copy()->subDay()->format('Y-m-d') . ' ' . $time . ' ' . $tzone));
 
         $srday1 = strtotime($date->format('Y-m-d H:i:s'));
 
+        // Calculate moonrise
         $moonvoshod = $moondata2[9];
         $moonvoshod1 = ($moonvoshod - floor($moonvoshod)) * 60;
         $moonvoshod = floor($moonvoshod) . ':' . floor($moonvoshod1) . ':00';
 
         $srday2 = strtotime($date->format('Y-m-d') . ' ' . $moonvoshod . ' ' . $tzone);
 
+        // Phase hunt
         $phases = self::phasehunt($srday1);
         $newMoonTimestamp = $phases[0];
 
@@ -114,21 +117,10 @@ class MoonHelper
         // Correct the moon day based on moon rise times and other factors
         $moonargvoshod = strtotime($date->format('Y-m-d') . ' ' . $moondata2[7] . ' ' . $tzone);
 
-        if (($moonday != 0) && ($moonargvoshod > $dataper2)) {
+        // Adjustment for moon day based on specific conditions
+        if ($srday1 < $moonargvoshod && $srday1 > $newMoonTimestamp) {
             $moonday += 1;
         }
-        if (($moonday == 0) && ($moonargvoshod > $dataper2) && ($srday1 > $srday2)) {
-            $moonday += 1;
-        }
-        if (($moonday == 0) && ($moonargvoshod > $dataper2) && ($srday1 < $srday2)) {
-            $moonday += 1;
-        }
-        if ($srday1 < $moonargvoshod) {
-            $moonday += 1;
-        }
-
-        // Debug output
-        echo "Debug: date={$date}, dataper={$dataper}, dateuser={$dateuser}, moonper3={$moonper3}, moonper4={$moonper4}, moonday={$moonday}, moonargvoshod={$moonargvoshod}, srday1={$srday1}, srday2={$srday2}\n";
 
         // Ensure the returned moon day is numeric
         if (!is_numeric($moonday)) {
@@ -501,9 +493,6 @@ class MoonHelper
         $sudist = $SunDist;
         $suangdia = $SunAng;
         $mpfrac = self::fixangle($MoonAge) / 360.0;
-
-        // Debugging output
-        echo "Moon Age: {$mage}, Moon Phase: {$pphase}, Moon Distance: {$dist}, Sun Distance: {$sudist}, Moon Angle: {$angdia}, Sun Angle: {$suangdia}\n";
 
         return array($mpfrac, $pphase, $mage, $dist, $angdia, $sudist, $suangdia, $GMTr, $GMTs, $GMTreal, $znak, $zstart, $znak28, $Fi, $Dol);
     }
