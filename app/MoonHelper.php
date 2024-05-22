@@ -26,7 +26,7 @@ class MoonHelper
     const SYNMONTH = 29.53058868;
 
     private static $cityCoordinates = [
-        "Москва" => ['north' => 55.45, 'east' => 37.37, 'gmt' => 3],
+        "Москва" => ['lat' => '56.946285', 'lng' => '24.105078', 'gmt' => 3],
         // Add other cities here following the same pattern
     ];
 
@@ -45,8 +45,8 @@ class MoonHelper
 
         // Get city coordinates and timezone
         $cityInfo = self::$cityCoordinates[$city];
-        $north = $cityInfo['north'];
-        $east = $cityInfo['east'];
+        $north = $cityInfo['lat'];
+        $east = $cityInfo['lng'];
         $gmt = $cityInfo['gmt'];
 
         // Prepare date and time parameters
@@ -76,8 +76,8 @@ class MoonHelper
 
         // Get city coordinates and timezone
         $cityInfo = self::$cityCoordinates[$city];
-        $north = $cityInfo['north'];
-        $east = $cityInfo['east'];
+        $north = $cityInfo['lat'];
+        $east = $cityInfo['lng'];
         $gmt = $cityInfo['gmt'];
 
         $leto = 0; // Summer time adjustment if any, typically handled outside.
@@ -114,25 +114,44 @@ class MoonHelper
         // Calculate the moon day by counting the days from the new moon
         $moonday = floor(($moonper4 - $moonper3) / (24 * 3600)) + 1;
 
-        // Correct the moon day based on moon rise times and other factors
-        $moonargvoshod = strtotime($date->format('Y-m-d') . ' ' . $moondata2[7] . ' ' . $tzone);
-
-        // Adjustment for moon day based on specific conditions
-        if ($srday1 < $moonargvoshod && $srday1 > $newMoonTimestamp) {
-            $moonday += 1;
-        }
-
         // Ensure the returned moon day is numeric
         if (!is_numeric($moonday)) {
             throw new \Exception("Calculated moon day is not numeric.");
         }
 
+        // Apply off-by-one correction if necessary
+        $moonday = self::adjustMoonDay($moonday, $srday1, $newMoonTimestamp, $moondata2[7]);
+
+        // Debug output to track values
+        echo "New Moon Timestamp: $newMoonTimestamp\n";
+        echo "Current Timestamp: $srday1\n";
+        echo "Calculated Moon Day: $moonday\n";
+        echo "Moon Age: " . (($srday1 - $newMoonTimestamp) / (24 * 3600)) . "\n";
+        echo "Moon Argo Voshod: $srday2\n";
+
         return (int)$moonday;
+    }
+
+    private static function adjustMoonDay($moonday, $srday1, $newMoonTimestamp, $moonRiseTime)
+    {
+        // Ensure that moon day adjustment considers the moon's age and phase properly
+        $moonAge = ($srday1 - $newMoonTimestamp) / (24 * 3600);
+        $moonRiseTimestamp = strtotime($moonRiseTime);
+
+        // Correction for moon day based on moon rise and set times
+        if ($srday1 < $moonRiseTimestamp) {
+            $moonday -= 1;
+        }
+
+        if ($moonAge >= 28 && $moonAge <= 29) {
+            $moonday += 1;
+        }
+
+        return $moonday;
     }
 
     public static function meanphase($sdate, $k)
     {
-
         // Time in Julian centuries from 1900 January 0.5
         $t = ($sdate - 2415020.0) / 36525;
         $t2 = $t * $t;    // Square for frequent use 
@@ -285,7 +304,6 @@ class MoonHelper
             self::jdaytosecs(self::truephase($k2, 0.0))
         );
     }
-
 
     // Converts degrees to radians.
     public static function torad($arg)

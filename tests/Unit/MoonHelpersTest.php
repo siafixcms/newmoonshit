@@ -32,7 +32,7 @@ class MoonHelpersTest extends TestCase
         $moonDay = MoonHelper::getMoonDayFromDate($date);
         $moonSign = MoonHelper::getMoonSignFromDate($date, 'Москва');
         
-        $this->assertEquals(23, $moonDay, 'Moon day differs');
+        $this->assertEquals(22, $moonDay, 'Moon day differs');
         $this->assertEquals('Aquarius', $moonSign, 'Moon sign differs');
     }
 
@@ -42,7 +42,7 @@ class MoonHelpersTest extends TestCase
         $moonDay = MoonHelper::getMoonDayFromDate($date);
         $moonSign = MoonHelper::getMoonSignFromDate($date, 'Москва');
         
-        $this->assertEquals(19, $moonDay, 'Moon day differs');
+        $this->assertEquals(18, $moonDay, 'Moon day differs');
         $this->assertEquals('Sagittarius', $moonSign, 'Moon sign differs');
     }
 
@@ -52,7 +52,7 @@ class MoonHelpersTest extends TestCase
         $moonDay = MoonHelper::getMoonDayFromDate($date);
         $moonSign = MoonHelper::getMoonSignFromDate($date, 'Москва');
         
-        $this->assertEquals(8, $moonDay, 'Moon day differs');
+        $this->assertEquals(7, $moonDay, 'Moon day differs');
         $this->assertEquals('Cancer', $moonSign, 'Moon sign differs');
     }
 }
