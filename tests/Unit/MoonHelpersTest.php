@@ -55,4 +55,14 @@ class MoonHelpersTest extends TestCase
         $this->assertEquals(7, $moonDay, 'Moon day differs');
         $this->assertEquals('Cancer', $moonSign, 'Moon sign differs');
     }
+
+    public function testFourthOutcome()
+    {
+        $date = Carbon::create(2024, 5, 22, 15, 00, 0);
+        $moonDay = MoonHelper::getMoonDayFromDate($date);
+        $moonSign = MoonHelper::getMoonSignFromDate($date, 'Москва');
+        
+        $this->assertEquals(14, $moonDay, 'Moon day differs');
+        $this->assertEquals('Scorpio', $moonSign, 'Moon sign differs');
+    }
 }
