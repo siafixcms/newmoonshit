@@ -122,13 +122,6 @@ class MoonHelper
         // Apply off-by-one correction if necessary
         $moonday = self::adjustMoonDay($moonday, $srday1, $newMoonTimestamp, $moondata2[7]);
 
-        // Debug output to track values
-        echo "New Moon Timestamp: $newMoonTimestamp\n";
-        echo "Current Timestamp: $srday1\n";
-        echo "Calculated Moon Day: $moonday\n";
-        echo "Moon Age: " . (($srday1 - $newMoonTimestamp) / (24 * 3600)) . "\n";
-        echo "Moon Argo Voshod: $srday2\n";
-
         return (int)$moonday;
     }
 
